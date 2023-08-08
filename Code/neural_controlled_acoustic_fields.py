@@ -31,8 +31,10 @@ gaussian_3d = gaussian(width, std=width//4).reshape(-1, 1, 1) * \
 class Visualization(HasTraits):
     time_step = Range(0, n_time_steps-1, 0)
     setup_type = Enum("Center", "Diamond", "Cube", "Ring")
+    pulse_type = Enum("Initial", "Continuous")  # New attribute for pulse type
     scene = Instance(MlabSceneModel, ())
     title = Str("Holographic Assembly for Construction of Synthetic Nano-Brains")
+    
 
     # New method to apply absorbing boundary condition
     def apply_boundary_condition(self, p):
@@ -58,7 +60,7 @@ class Visualization(HasTraits):
         grad_z = (arr[1:-1, 1:-1, 2:] - arr[1:-1, 1:-1, :-2]) / (2 * dx)
         return grad_x, grad_y, grad_z
     
-    @on_trait_change('setup_type')
+    @on_trait_change('setup_type, pulse_type')
     def run_simulation(self):
         # Reset pressure data and time step
         self.pressure_data = []
@@ -98,15 +100,15 @@ class Visualization(HasTraits):
             theta = np.linspace(0, 2*np.pi, 8, endpoint=False)  # 8 points around a circle
             points = [(int(round(mid_point + r * np.cos(t))), int(round(mid_point + r * np.sin(t))), mid_point) for t in theta]
 
-
-        # Introduce Gaussian pulse at each point
-        for point in points:
-            x, y, z = point
-            start_x, start_y, start_z = x - width // 2, y - width // 2, z - width // 2
-            end_x, end_y, end_z = x + width // 2, y + width // 2, z + width // 2
-            p[start_x:end_x, start_y:end_y, start_z:end_z] += gaussian_3d
-
         for t in range(n_time_steps):
+            # Introduce Gaussian pulse at each point
+            if self.pulse_type == "Continuous" or (self.pulse_type == "Initial" and t == 0):
+                for point in points:
+                    x, y, z = point
+                    start_x, start_y, start_z = x - width // 2, y - width // 2, z - width // 2
+                    end_x, end_y, end_z = x + width // 2, y + width // 2, z + width // 2
+                    p[start_x:end_x, start_y:end_y, start_z:end_z] += gaussian_3d
+
             laplacian = (cp.roll(p, -1, axis=0) + cp.roll(p, 1, axis=0) - 2*p) / dx**2 + \
                         (cp.roll(p, -1, axis=1) + cp.roll(p, 1, axis=1) - 2*p) / dx**2 + \
                         (cp.roll(p, -1, axis=2) + cp.roll(p, 1, axis=2) - 2*p) / dx**2
@@ -139,6 +141,7 @@ class Visualization(HasTraits):
                     Item('scene', editor=SceneEditor(scene_class=MayaviScene),
                         height=600, width=800, show_label=False),
                     Item('setup_type', label="Initial Setup"),
+                    Item('pulse_type', label="Pulse Type"),  # UI for pulse type
                     '_',
                     'time_step',
                     orientation="vertical"
