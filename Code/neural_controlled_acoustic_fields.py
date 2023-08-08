@@ -15,6 +15,8 @@ dx = length / n_points  # Spatial step
 dt = dx / (2 * c)  # Time step based on CFL condition
 n_time_steps = int(total_time / dt)
 
+mid_point = n_points // 2  # Definition of midpoint
+
 # Gaussian pulse
 def gaussian(size, std):
     return cp.exp(-(cp.linspace(-size // 2, size // 2, size)**2) / (2 * std**2))
@@ -41,10 +43,22 @@ class Visualization(HasTraits):
         p_prev = cp.zeros_like(p)
         p_next = cp.zeros_like(p)
 
-        mid_point = n_points // 2
-        start_point = mid_point - width // 2
-        end_point = mid_point + width // 2
-        p[start_point:end_point, start_point:end_point, start_point:end_point] = gaussian_3d
+        # Define 6 points for a 3D diamond
+        points = [
+            (mid_point, mid_point, mid_point - width),
+            (mid_point, mid_point, mid_point + width),
+            (mid_point - width, mid_point, mid_point),
+            (mid_point + width, mid_point, mid_point),
+            (mid_point, mid_point - width, mid_point),
+            (mid_point, mid_point + width, mid_point)
+        ]
+
+        # Introduce Gaussian pulse at each point
+        for point in points:
+            x, y, z = point
+            start_x, start_y, start_z = x - width // 2, y - width // 2, z - width // 2
+            end_x, end_y, end_z = x + width // 2, y + width // 2, z + width // 2
+            p[start_x:end_x, start_y:end_y, start_z:end_z] += gaussian_3d
 
         for t in range(n_time_steps):
             laplacian = (cp.roll(p, -1, axis=0) + cp.roll(p, 1, axis=0) - 2*p) / dx**2 + \
@@ -53,6 +67,7 @@ class Visualization(HasTraits):
             p_next = 2*p - p_prev + c**2 * dt**2 * laplacian
             self.pressure_data.append(cp.asnumpy(p))
             p_prev, p, p_next = p, p_next, p_prev
+
 
     @on_trait_change('time_step,scene.activated')
     def update_plot(self):
