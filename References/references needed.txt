@@ -1,0 +1,20 @@
+neural engineering
+
+neural/nanotech self-assembly
+	|_selfassemblyatallscales2002.pdf (https://gmwgroup.harvard.edu/sites/projects.iq.harvard.edu/files/gmwgroup/files/793.pdf)
+	|_selforganization-carbonnanotube-cluster2005.pdf (http://www.eng.tau.ac.il/~hanein/papers/2005_physica%20A.pdf)
+
+neural dynamics
+|_quasicriticality
+	|_quasicriticality-human-variability2022.pdf (https://www.frontiersin.org/articles/10.3389/fncom.2022.1037550/full)
+
+self-organization controlled
+|_quantum dots
+	|_quantumdots2012.pdf (https://www.researchgate.net/publication/277694919_Synthesis_Characterization_and_Self-assembly_of_Colloidal_Quantum_Dots)
+
+
+
+dna origami
+
+acoustic 3d holograms
+	|_holographic3Dacousticassembly2023.pdf (https://www.science.org/doi/10.1126/sciadv.adf6182)
