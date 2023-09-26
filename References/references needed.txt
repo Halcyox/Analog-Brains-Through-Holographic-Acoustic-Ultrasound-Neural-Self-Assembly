@@ -7,6 +7,8 @@ neural/nanotech self-assembly
 neural dynamics
 |_quasicriticality
 	|_quasicriticality-human-variability2022.pdf (https://www.frontiersin.org/articles/10.3389/fncom.2022.1037550/full)
+|_condensed matter body
+	|_neuralnetwork-condensedmatterbody2017.pdf
 
 self-organization controlled
 |_quantum dots

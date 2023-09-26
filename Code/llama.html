@@ -1,0 +1,47 @@
+// Create a Three.js scene
+const scene = new THREE.Scene();
+// Create a Three.js camera
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+// Create a Three.js renderer
+const renderer = new THREE.WebGLRenderer({
+canvas: document.getElementById("canvas"),
+antialias: true
+});
+// Add the scene and camera to the renderer
+renderer.addScene(scene);
+renderer.addCamera(camera);
+// Load an hologram image
+const hologramImage = new THREE.TextureLoader().load("hologram.jpg");
+const hologramMaterial = new THREE.MeshBasicMaterial({ map: hologramImage });
+// Create a hologram mesh
+const hologramMesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), hologramMaterial);
+scene.add(hologramMesh);
+// Add an interactive element to the scene
+const interactiveElement = document.createElement("div");
+interactiveElement.style.position = "absolute";
+interactiveElement.style.top = "0";
+interactiveElement.style.left = "0";
+interactiveElement.style.width = "100%";
+interactiveElement.style.height = "100%";
+scene.add(interactiveElement);
+// Define an interaction event listener
+function onInteraction(event) {
+// Get the user's mouse position
+const mousePosition = new THREE.Vector2(event.clientX, event.clientY);
+// Get the hologram mesh's position
+const hologramPosition = hologramMesh.position;
+// Calculate the distance between the user's position and the hologram position
+const distance = Math.sqrt((mousePosition.x - hologramPosition.x) ** 2 + (mousePosition.y - hologramPosition.y) ** 2);
+// Update the hologram position based on the user's distance
+hologramMesh.position.z = distance;
+// Render the scene
+renderer.render();
+}
+// Add an interaction event listener to the scene
+scene.addEventListener("interactive", onInteraction);
+// Start the animation loop
+function animate() {
+requestAnimationFrame(animate);
+renderer.render();
+}
+animate();
